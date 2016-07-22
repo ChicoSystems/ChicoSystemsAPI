@@ -11,6 +11,15 @@ router.get('/imgurdl/uses', function(req, res) {
     });
 });
 
+router.post('/imgurdl/version', function(req, res) {
+    var db = req.db;
+    var collection = db.get('imgurVersion');
+    collection.find({},{},function(e,docs){
+        res.send({"imgurdlVersion" : docs});
+    });
+});
+
+
 /* GET New User page. */
 router.get('/imgurdl/test/adduse', function(req, res) {
     res.render('adduse', { title: 'Add Test Use' });
@@ -27,6 +36,7 @@ router.post('/imgurdl/adduse', function(req, res) {
     var time = Math.floor(new Date() / 1000);
     var term = req.body.term;
     var os = req.body.os;
+    var ver = req.body.ver;
     var ip = req.connection.remoteAddress;
 
     // Set our collection
@@ -37,7 +47,8 @@ router.post('/imgurdl/adduse', function(req, res) {
         "time" : time,
         "term" : term,
 	"os"   : os,
-	"ip"   : ip
+	"ip"   : ip,
+	"ver"  : ver
     }, function (err, doc) {
         if (err) {
             // If it failed, return error
