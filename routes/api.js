@@ -23,9 +23,11 @@ router.post('/imgurdl/adduse', function(req, res) {
     var db = req.db;
 
     // Get our form values. These rely on the "name" attributes
-    var time = req.body.time;
+    //var time = req.body.time;
+    var time = Math.floor(new Date() / 1000);
     var term = req.body.term;
     var os = req.body.os;
+    var ip = req.connection.remoteAddress;
 
     // Set our collection
     var collection = db.get('imgurdlUses');
@@ -34,7 +36,8 @@ router.post('/imgurdl/adduse', function(req, res) {
     collection.insert({
         "time" : time,
         "term" : term,
-	"os"   : os
+	"os"   : os,
+	"ip"   : ip
     }, function (err, doc) {
         if (err) {
             // If it failed, return error
