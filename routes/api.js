@@ -11,6 +11,15 @@ router.get('/imgurdl/uses', function(req, res) {
     });
 });
 
+router.post('/imgurdl/version', function(req, res) {
+    var db = req.db;
+    var collection = db.get('imgurVersion');
+    collection.find({},{},function(e,docs){
+        res.send({"imgurdlVersion" : docs});
+    });
+});
+
+
 /* GET New User page. */
 router.get('/imgurdl/test/adduse', function(req, res) {
     res.render('adduse', { title: 'Add Test Use' });
