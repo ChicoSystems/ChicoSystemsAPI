@@ -1,0 +1,9 @@
+extends layout
+
+block content
+    h1= title
+    form#formAddUser(name="adduser",method="get",action="/api/imgurdl/adduse")
+        input#inputTime(type="text", placeholder="time", name="time")
+        input#inputTerm(type="text", placeholder="term", name="term")
+        input#inputOS(type="text", placeholder="os", name="os")
+        button#btnSubmit(type="submit") submit
