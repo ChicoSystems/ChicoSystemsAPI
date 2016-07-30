@@ -1,0 +1,4 @@
+db.imgurVersion.insert({
+   ver: '0.2', 
+   link: 'https://sourceforge.net/projects/imgurdl/files/latest/download'
+})
