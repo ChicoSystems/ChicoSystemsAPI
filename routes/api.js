@@ -1,4 +1,5 @@
 var express = require('express');
+var satelize = require('satelize');
 var router = express.Router();
 
 router.get('/imgurdl/uses', function(req, res) {
@@ -43,13 +44,37 @@ router.post('/imgurdl/adduse', function(req, res) {
     // Set our collection
     var collection = db.get('imgurdlUses');
 
+satelize.satelize({ip: ip}, function(err, payload){
+
+   console.log("payload: " + payload);
+   console.log("err: " + err);
+   var country = "";
+   var timezone = "";
+   var latitude = "";
+   var longitude = "";
+   if(payload == null){
+      country = "NA";
+	timezone = "NA";
+	latitude = "NA";
+	longitude = "NA";
+   }else{
+	country = payload["country_code"];
+	timezone = payload["timezone"];
+	latitude = payload["latitude"];
+	longitude = payload["longitude"];
+   }
+
     // Submit to the DB
     collection.insert({
         "time" : time,
         "term" : term,
 	"os"   : os,
 	"ip"   : ip,
-	"ver"  : ver
+	"ver"  : ver,
+        "country"  : country,
+        "latitude" : latitude,
+        "longitude" : longitude,
+        "timezone" : timezone
     }, function (err, doc) {
         if (err) {
             // If it failed, return error
@@ -60,6 +85,9 @@ router.post('/imgurdl/adduse', function(req, res) {
             res.send("success");
         }
     });
+});
+
+
 });
 
 module.exports = router;
