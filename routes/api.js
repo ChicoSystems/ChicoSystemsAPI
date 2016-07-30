@@ -5,7 +5,8 @@ router.get('/imgurdl/uses', function(req, res) {
     var db = req.db;
     var collection = db.get('imgurdlUses');
     collection.find({},{},function(e,docs){
-        res.render('imgurdlUses', {
+	res.render('imgurdlUses', {
+	    moment : require('moment'),
             "imgurdlUses" : docs
         });
     });
