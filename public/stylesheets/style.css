@@ -6,3 +6,11 @@ body {
 a {
   color: #00B7FF;
 }
+
+img#map{
+margin-left: auto;
+margin-right: auto;
+width: 1024px;
+height: 512px;
+display: block;
+}
