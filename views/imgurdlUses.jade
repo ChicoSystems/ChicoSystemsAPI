@@ -1,8 +1,13 @@
+link(href='/stylesheets/style.css', rel='stylesheet')
 link(href='/stylesheets/bootstrap.css', rel='stylesheet')
+script(src='/javascripts/jquery-3.1.0.min.js')
 script(src='/javascripts/bootstrap.min.js')
+script var info = !{JSON.stringify(imgurdlUses)}
+script(src='/javascripts/map.js')
 block content
     h1.
         ImgurDL Uses
+    img(src="")#map
     div#map_canvas
     div.table-responsive
         table.table.table-sm.table-bordered.table-inverse.table-hover
