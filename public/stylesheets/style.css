@@ -14,3 +14,12 @@ width: 1024px;
 height: 512px;
 display: block;
 }
+
+#answer {
+background-color:black;
+color:black;
+}
+
+#answer:hover {
+background-color: white;
+color:black;
