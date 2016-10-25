@@ -114,6 +114,66 @@ router.get('/classify5/:catName', function (req, res){
 	
 });
 
+//classifies the subdisciplines of all questions in a category, whose disciplines have already been classified.
+router.get('/classify6/:catName', function(req, res){
+	var db = req.db;
+	var catName = req.params.catName;
+	var collection = db.get('questions');
+	
+	//First we query the local db for all records with the given category, that also have a discipline associated, but don't have a subdiscipline.
+	collection.find({"category" : catName}, {}, function(e, docs){
+		//only use workingRecords that have a discipline associated
+		var workingRecords = [];
+		for(i in docs){
+			//test if record has a discipline field && does not have a subDiscipline field it does add it to working records, otherwise ignore it.
+			var singleRecord = docs[i];
+			if(singleRecord.hasOwnProperty('discipline') && !singleRecord.hasOwnProperty('subDiscipline')){
+				console.log("record " + i + " has discipline, but no subDiscipline... adding to workingRecords[]");
+				workingRecords.push(singleRecord);
+			}
+		}
+	});
+
+	//We translate the given discipline to it's matching subclassifier on uClassify
+	
+	//create a new array which holds the subclassifier name in the same order as the workingRecords[] array.
+	var classifierName = [];
+	for(i in workingRecords){
+		var discipline = workingRecords[i]["discipline"];
+		//the following disciplines are possible: Arts, Business, Computers, Games, Health, Home, Recreation, Science, Society, Sports
+		if(discipline == "Arts"){
+			classifierName.push("art-topics");
+		}else if(discipline == "Business"){
+			classifierName.push("business-topics");
+		}else if(discipline == "Computers"){
+			classifierName.push("computer-topics");
+		}else if(discipline == "Games"){
+			classifierName.push("game-topics");
+		}else if(discipline == "Health"){
+			classifierName.push("health-topics");
+		}else if(discipline == "Home"){
+			classifierName.push("home-topics");
+		}else if(discipline == "Recreation"){
+			classifierName.push("recreation-topics");
+		}else if(discipline == "Science"){
+			classifierName.push("science-topics");
+		}else if(discipline == "Society"){
+			classifierName.push("society-topics");
+		}else if(discipline == "Sports"){
+			classifierName.push("sport-topics");
+		} 
+	}
+
+	//For every seperate discipline, we create an api call to uclassify asking it to classify the subdisciplines.
+
+
+	//We find the best matching subdiscipline for every record, and record it in the local database.
+
+	
+});
+
+
+//classifies the disciplines of all questions in a category, that have not yet been classified.
 router.get('/classify4/:catName', function(req, res){
 	//query local db for a set of questions
 	var db = req.db;
