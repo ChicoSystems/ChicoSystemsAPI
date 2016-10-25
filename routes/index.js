@@ -7,6 +7,10 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; NODE_TLS_REJECT_UNAUTHORIZED=0
 function addSlashes( str ) {
     return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
 }
+var workingRecords = [];
+var globalRecordNum = 0;
+var db;
+var collection;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -114,16 +118,160 @@ router.get('/classify5/:catName', function (req, res){
 	
 });
 
+//6 didn't work, lets try 7
+router.get('/classify7/:catName', function(req, res){
+	workingRecords = [];
+	db = req.db;
+	var catName = req.params.catName;
+	collection = db.get('questions');
+
+	collection.find({"category" : catName},[],function(e, docs){
+
+
+		//use only working records that have a discpiline, and no subDiscipline
+		for(i in docs){
+			var singleRecord = docs[i];
+			if(singleRecord.hasOwnProperty('discipline') && !singleRecord.hasOwnProperty('subDiscipline')){
+				console.log("record " + i + " has disclipine, but no subDiscipline... adding to workingRecords[]");
+				workingRecords.push(singleRecord);
+			}
+		}
+
+
+		classifyRequest(0);		
+		res.send(workingRecords);
+		//
+
+
+	}); //end db query
+});//end router
+
+
+function getClassifier(discipline){
+	var returnVal = "";
+		if(discipline == "Arts"){
+                    returnVal = "art-topics";
+                }else if(discipline == "Business"){
+                    returnVal = "business-topics";
+                }else if(discipline == "Computers"){
+			returnVal = "computer-topics";
+                }else if(discipline == "Games"){
+                        returnVal = "game-topics";
+                }else if(discipline == "Health"){
+                        returnVal = "health-topics";
+                }else if(discipline == "Home"){
+                        returnVal = "home-topics";
+                }else if(discipline == "Recreation"){
+                        returnVal = "recreation-topics";
+                }else if(discipline == "Science"){
+                        returnVal = "science-topics";
+                }else if(discipline == "Society"){
+                        returnVal = "society-topics";
+                }else if(discipline == "Sports"){
+                        returnVal = "sport-topics";
+                }
+	return returnVal;
+}
+
+function classifyRequest(recordNum){
+	globalRecordNum = recordNum; //used to give callback access to current recordNum
+	var post_data = '{"texts":[';
+	var newString = workingRecords[recordNum]["question"];
+	newString = addSlashes(newString);
+	post_data += '"';
+	post_data += newString;
+	post_data += '"';
+	post_data += ']}';
+	console.log("post_data: " + post_data);
+	var classifer = getClassifier(workingRecords[recordNum]["discipline"]);
+	var url = "https://api.uclassify.com/v1/uClassify/" + classifer + "/classify";
+	console.log("url: " + url);
+	console.log("will make actuall request next");
+	//classifyCallback(null, null, null);
+	
+	request(
+		{
+			url: url,
+			method: "POST",
+			json: true,
+			headers: {
+                        	'Content-Type' : 'application/json',
+                                'Authorization' : 'Token ZdlVUz79qRtZ'
+                        },
+                        body: post_data
+		},
+		classifyCallback
+	);
+}
+
+function classifyCallback(error, response, body){
+	console.log("classifyCallbackCalled on recordNum: " + globalRecordNum);
+	console.log("workingRecords.length == " + workingRecords.length);
+	
+	//if this is last of working records, we don't do anything, else, we do callback work
+	if(globalRecordNum == workingRecords.length){
+		console.log("we are done processing records");
+	}else{
+		console.log("processing this record, and calling next");
+		//write to db here, and call classifyRequest(globalRecordNum + 1 in callback);
+
+		//loop through response, find best matching subDiscipline for each text
+		if(error == null){
+			console.log("body.length == " + body.length);
+			var bestSubDiscipline;
+			for(i in body){
+				var largestPNum = 0;
+				var largestPIndex = 0;
+				//loop through each item in each classification, find biggest p and choose that className as bestSubDiscipline
+				for(j in body[i]["classification"]){
+					var pNum = body[i]["classification"][j]["p"];
+					if(pNum > largestPNum){
+						largestPNum = pNum;
+						largestPIndex = j;
+					}
+				}
+				bestSubDiscipline = body[i]["classification"][largestPIndex]["className"];
+			}
+			//body.length should always == 1
+			if(body.length != 1){
+				console.log("error, body.length should always == 1");
+			}else{
+				// here we write our new subDiscipline to the local db, and then call classifyRequest(globalRecordNum +1)
+				console.log("best subDiscipline : " + bestSubDiscipline);
+				var id = workingRecords[globalRecordNum]["_id"];
+
+				console.log("updating local record: " + id);
+				//var db = req.db;
+				//var collection = db.get('questions'); //collections was undefined
+				collection.update(
+					{"_id" : id},
+					{"$set" : {"subDiscipline" : bestSubDiscipline }},
+					function(err, result){
+						if(err) throw err;
+						console.log("record updated, processing next");
+						classifyRequest(globalRecordNum + 1);
+					}
+				);
+			}
+		}else{
+			console.log("There was an error: " + error);
+		}
+
+
+		//classifyRequest(globalRecordNum + 1);
+	}
+}
+
+
 //classifies the subdisciplines of all questions in a category, whose disciplines have already been classified.
 router.get('/classify6/:catName', function(req, res){
 	var db = req.db;
 	var catName = req.params.catName;
 	var collection = db.get('questions');
 	
-	//First we query the local db for all records with the given category, that also have a discipline associated, but don't have a subdiscipline.
-	collection.find({"category" : catName}, {}, function(e, docs){
+    //First we query the local db for all records with the given category, that also have a discipline associated, but don't have a subdiscipline.
+    collection.find({"category" : catName}, {}, function(e, docs){
 		//only use workingRecords that have a discipline associated
-		var workingRecords = [];
 		for(i in docs){
 			//test if record has a discipline field && does not have a subDiscipline field it does add it to working records, otherwise ignore it.
 			var singleRecord = docs[i];
@@ -132,7 +280,6 @@ router.get('/classify6/:catName', function(req, res){
 				workingRecords.push(singleRecord);
 			}
 		}
-	});
 
 	//We translate the given discipline to it's matching subclassifier on uClassify
 	
@@ -165,12 +312,115 @@ router.get('/classify6/:catName', function(req, res){
 	}
 
 	//For every seperate discipline, we create an api call to uclassify asking it to classify the subdisciplines.
+	//for now we'll just make a seperate call for each question, this can be changed later, it'll take to long to code now.
+
+	for(i in workingRecords){
+		
+
+//	if(i == 0){
+	//	var i = 0;
+		//create an api call for each record
+		var post_data = '{"texts":['; //start the post_data string
+		var newString = workingRecords[i]["question"];
+		
+		//the api can't parse the json if there are unescaped special charaters
+		newString = addSlashes(newString);
+
+		//add quotes before and after the string
+		post_data += '"';
+		post_data += newString;
+		post_data += '"';
+
+		//no commas are needed here, because we are only querying one text at a time.
+
+		//add end to post_data string
+		post_data += ']}';
+		console.log("post_data: " + post_data);
+		
+		var url = "https://api.uclassify.com/v1/uClassify/" + classifierName[i] + "/classify";
+		//var url = "https://api.uclassify.com/v1/uClassify/Topics/classify";
+		console.log("url: " + url);
 
 
-	//We find the best matching subdiscipline for every record, and record it in the local database.
+		request(
+			{
+				url: url,
+				method: "POST",
+				json: true,
+				headers: {
+					'Content-Type' : 'application/json',
+		                      	'Authorization' : 'Token ZdlVUz79qRtZ'
+				},
+				body: post_data
+			}, function(error, response, body){
+				console.log("uclassify returned workingRecord["+i+"]");
+				console.log("error: " + error + " response: " + response + " body: " + JSON.stringify(body));
+		//		console.log("request returned: error: " + error + " response: " + JSON.stringify(response) + " body: " + JSON.stringify(body));
+//				res.send(JSON.stringify(body));
+			}
+		);
+
+
+
+}
+
+		//send post with post_data, using the correct classifier to uClassify
+/*		request({
+			url: url,
+			method: "POST",
+			json: true,
+			headers: {
+                        	'Content-Type' : 'application/json',
+                        	'Authorization' : 'Token ZdlVUz79qRtZ'
+                        },
+			body: post_data
+		}, function(error, response, body){
+			console.log("response from uClassify, body: " + JSON.stringify(body) + " response: " + JSON.stringify(response) + " error: " + error);
+			//loop through response, find best matching subDiscipline for each text
+			var bestSubDiscipline;
+			for(k in body){
+				var largestPNum = 0;
+				var largestPIndex = 0;
+
+				//loop through each item in each classification, find biggest p and add that className to the bestSubDiscipline array
+				for(j in body[k]["classification"]){
+					var pNum = body[k]["classification"][j]["p"];
+					if(pNum > largestPNum){
+						largestPNum = pNum;
+						largestPIndex = j;
+					}
+				}	
+				bestSubDiscipline = body[k]["classification"][largestPIndex]["className"];
+			}
+			
+			console.log("Best subDiscipline: " + bestSubDiscipline);
+
+			//update the current working record with the given subDiscipline
+			var id = workingRecords[i]["_id"];
+			console.log("updating record: " + id + " with subDiscipline: " + bestSubDiscipline);
+
+			collection.update(
+				{"_id" : id},
+				{"$set" : {"subDiscipline" : bestSubDiscipline}}
+			);
+
+			res.render('viewcategory', {
+				"questions" : docs
+			});
+
+
+		});//end request
+*/
+//	}//endif i == 0
+
+		
+//	}
+
+    });//end db query
+
 
 	
-});
+});//end router
 
 
 //classifies the disciplines of all questions in a category, that have not yet been classified.

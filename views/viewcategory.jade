@@ -7,8 +7,8 @@ script(src='/javascripts/bootstrap.min.js')
 block content
     h1.
         Jeopardy Category: #{questions[0].category}
-    div #[a(href='/classify4/#{questions[0].category}') Classify ALL DISCIPLINES ]
-    div #[a(href='/classify6/#{questions[0].category}') Classify ALL SUBDISCIPLINES ]
+    div #[a(href='/classify4/#{questions[0].category}') Classify Disciplines ]
+    div #[a(href='/classify7/#{questions[0].category}') Classify SubDisciplines ]
     div#map_canvas
     div.table-responsive
         table.table.table-sm.table-bordered.table-inverse.table-hover
