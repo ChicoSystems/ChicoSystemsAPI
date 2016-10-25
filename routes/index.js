@@ -100,7 +100,12 @@ router.get('/classify5/:catName', function (req, res){
 				{"$set" : {"discipline" : bestCategory[i]}}
 			);
 
-			res.render("category",
+			res.render('viewcategory', {
+		            "questions" : docs
+		        });
+			
+
+
 		//	}
 		}
 
@@ -193,7 +198,29 @@ router.get('/classify4/:catName', function(req, res){
 			}
 			
 
-			//write new "discipline" field to each corresponding item in the db	
+			//write new "discipline" field to each corresponding item in the db
+			//write to db, adding field "discipline" to each corresponding item
+	                for(i in docs){
+	                        var id = docs[i]["_id"];
+	                        console.log("updating record: " + id + " with discipline: " + bestCategory[i]);
+	
+	                //      if(i == 0){
+	
+	                        //this is updating the _id with a discipline, but it is erasing all other record info
+	                        collection.update(
+	                                {"_id" : id},
+	                                {"$set" : {"discipline" : bestCategory[i]}}
+	                        );
+	
+	                        res.render('viewcategory', {
+	                            "questions" : docs
+	                        });
+
+
+
+                //      }
+                }
+	
         	});
 
 
