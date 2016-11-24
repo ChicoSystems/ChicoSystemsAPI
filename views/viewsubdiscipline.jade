@@ -33,7 +33,7 @@ block content
                           div#link #[a(href='/answer/#{use.answer}') LINK ]
                           div#answer #{use.answer}
                         td #{use.round}
-                        td #{use.air_date} / #{use.show_number}
-                        td #{use.category}
-                        td #{use.discipline}
-                        td #{use.subDiscipline}
+                        td #{use.air_date} / #[a(href='/show/#{use.show_number}') #{use.show_number} ]
+                        td #[a(href='/category/#{use.category}') #{use.category} ]
+                        td #[a(href='/discipline/#{use.discipline}') #{use.discipline} ]
+                        td #[a(href='/subDiscipline/#{use.subDiscipline}') #{use.subDiscipline} ]
