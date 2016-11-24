@@ -6,7 +6,7 @@ script(src='/javascripts/bootstrap.min.js')
   script var info = !{JSON.stringify(questions)}
 block content
     h1.
-        Jeopardy Category: #{questions[0].category}
+        Jeopardy Answers: #{questions[0].answer}
     div #[a(href='/classify4/#{questions[0].category}') Classify Disciplines ]
     div #[a(href='/classify7/#{questions[0].category}') Classify SubDisciplines ]
     div#map_canvas
@@ -20,6 +20,7 @@ block content
                     th Answer
                     th Round
                     th Airdate / Show #
+                    th Category
                     th Discipline
                     th Sub Discipline
             tbody
@@ -32,6 +33,7 @@ block content
                           div#link #[a(href='/answer/#{use.answer}') LINK ]
                           div#answer #{use.answer}
                         td #{use.round}
-                        td #{use.air_date} / #[a(href='/show/#{use.show_number}') #{use.show_number} ]
-                        td #[a(href='/discipline/#{use.discipline}') #{use.discipline} ]
-                        td #[a(href='/subdiscipline/#{use.subDiscipline}') #{use.subDiscipline} ]
+                        td #{use.air_date} / #{use.show_number}
+                        td #{use.category}
+                        td #{use.discipline}
+                        td #{use.subDiscipline}

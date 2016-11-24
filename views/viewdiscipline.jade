@@ -6,7 +6,7 @@ script(src='/javascripts/bootstrap.min.js')
   script var info = !{JSON.stringify(questions)}
 block content
     h1.
-        Jeopardy Category: #{questions[0].category}
+        Jeopardy Disciplines: #{questions[0].discipline}
     div #[a(href='/classify4/#{questions[0].category}') Classify Disciplines ]
     div #[a(href='/classify7/#{questions[0].category}') Classify SubDisciplines ]
     div#map_canvas

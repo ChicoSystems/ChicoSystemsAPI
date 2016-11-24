@@ -8,6 +8,8 @@ var bodyParser = require('body-parser');
 var mongo = require('mongodb');
 var monk = require('monk');
 var db = monk('localhost:27017/jeopardy');
+var db_walmart = monk('localhost:27017/walmart');
+var db_quizbowl = monk('localhost:27017/quizbowl');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -30,6 +32,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Make our db accessible to our router
 app.use(function(req,res,next){
     req.db = db;
+    req.db_walmart = db_walmart;
+    req.db_quizbowl = db_quizbowl;
     next();
 });
 

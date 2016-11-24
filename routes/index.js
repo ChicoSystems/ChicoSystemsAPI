@@ -12,6 +12,41 @@ var globalRecordNum = 0;
 var db;
 var collection;
 
+router.get('/quizbowl/category', function(req, res){
+	var db = req.db_quizbowl;
+	var collection = db.get('questions');
+
+	collection.distinct('category', {}, {}, function(e, docs){
+		res.render('quizCategory', {
+			"category" : docs
+		});
+	});
+});
+
+router.get('/quizbowl/category/:catName', function(req, res) {
+    var db = req.db_quizbowl;
+    var catName = req.params.catName;
+    var collection = db.get('questions');
+    collection.find({"category" : catName},{},function(e,docs){
+        res.render('viewcategory_quizbowl', {
+            "questions" : docs
+        });
+    });
+});
+
+
+
+//display info about walmart stores
+router.get('/walmart', function(req, res){
+	var db = req.db_walmart;
+
+	var collection = db.get('stores');
+	collection.findOne({},{}, function(e, docs){
+		res.send(docs);
+	});
+});
+
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -32,6 +67,49 @@ router.get('/category', function(req, res) {
     });
 });
 
+router.get('/show/:showNum', function(req, res){
+	var db = req.db;
+	var showNum = req.params.showNum;
+	var collection = db.get('questions');
+	collection.find({"show_number" : showNum},{}, function(e, docs){
+		res.render('viewshownum', {
+			"questions" : docs
+		});
+	});
+});
+
+router.get('/discipline/:discipline', function(req, res){
+	var db = req.db;
+	var discipline = req.params.discipline;
+	var collection = db.get('questions');
+	collection.find({"discipline" : discipline},{}, function(e, docs){
+		res.render('viewdiscipline', {
+			"questions" : docs
+		});
+	});
+});
+
+router.get('/subdiscipline/:subdiscipline', function(req, res){
+	var db = req.db;
+	var subdiscipline = req.params.subdiscipline;
+	var collection = db.get('questions');
+	collection.find({"subDiscipline" : subdiscipline},{}, function(e, docs){
+		res.render('viewsubdiscipline',{
+			"questions" : docs
+		});
+	});
+});
+
+router.get('/answer/:answer', function(req, res){
+	var db = req.db;
+	var answer = req.params.answer;
+	var collection = db.get('questions');
+	collection.find({"answer" : answer},{}, function(e, docs){
+		res.render('viewanswer', {
+			"questions" : docs
+		});
+	});
+});
 
 router.get('/category/:catName', function(req, res) {
     var db = req.db;
@@ -178,8 +256,12 @@ function classifyRequest(recordNum){
 	var post_data = '{"texts":[';
 	var newString = workingRecords[recordNum]["question"];
 	newString = addSlashes(newString);
-	post_data += '"';
+	post_data += '" ';
+	post_data += workingRecords[recordNum]["category"];
+	post_data += " ";
 	post_data += newString;
+	post_data += " ";
+	post_data += workingRecords[recordNum]["answer"];
 	post_data += '"';
 	post_data += ']}';
 	console.log("post_data: " + post_data);
@@ -459,7 +541,13 @@ router.get('/classify4/:catName', function(req, res){
 
 
 			post_data += '"';
+			post_data += ' ';
+			post_data += workingRecords[i]["category"];
+			post_data += ' ';
 			post_data += newString;
+			post_data += ' ';
+			post_data += workingRecords[i]["answer"];
+			post_data += ' ';
 			post_data += '"';	
 			
 			//add comma to string if this is not the last item in working records

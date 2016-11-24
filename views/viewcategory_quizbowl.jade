@@ -6,7 +6,7 @@ script(src='/javascripts/bootstrap.min.js')
   script var info = !{JSON.stringify(questions)}
 block content
     h1.
-        Jeopardy Category: #{questions[0].category}
+        QuizBowl Category: #{questions[0].category}
     div #[a(href='/classify4/#{questions[0].category}') Classify Disciplines ]
     div #[a(href='/classify7/#{questions[0].category}') Classify SubDisciplines ]
     div#map_canvas
@@ -15,23 +15,18 @@ block content
             thead.thead-inverse
                 tr
                     th #
-                    th Value
+                    th Id
+                    th Fold
+                    th Category
                     th Question
                     th Answer
-                    th Round
-                    th Airdate / Show #
-                    th Discipline
-                    th Sub Discipline
             tbody
                 each use, i in questions
                     tr
                         th(scope='row') #{i}
-                        td #{use.value}
-                        td #{use.question}
+                        td #{use.id}
+                        td #{use.fold}
+                        td #{use.category}
+                        td #{use.raw}
                         td 
-                          div#link #[a(href='/answer/#{use.answer}') LINK ]
-                          div#answer #{use.answer}
-                        td #{use.round}
-                        td #{use.air_date} / #[a(href='/show/#{use.show_number}') #{use.show_number} ]
-                        td #[a(href='/discipline/#{use.discipline}') #{use.discipline} ]
-                        td #[a(href='/subdiscipline/#{use.subDiscipline}') #{use.subDiscipline} ]
+                          div#answer #{use.label}
