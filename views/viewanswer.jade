@@ -1,0 +1,39 @@
+link(href='/stylesheets/style.css', rel='stylesheet')
+link(href='/stylesheets/bootstrap.css', rel='stylesheet')
+script(src='/javascripts/jquery-3.1.0.min.js')
+script(src='/javascripts/bootstrap.min.js')
+//-
+  script var info = !{JSON.stringify(questions)}
+block content
+    h1.
+        Jeopardy Answers: #{questions[0].answer}
+    div #[a(href='/classify4/#{questions[0].category}') Classify Disciplines ]
+    div #[a(href='/classify7/#{questions[0].category}') Classify SubDisciplines ]
+    div#map_canvas
+    div.table-responsive
+        table.table.table-sm.table-bordered.table-inverse.table-hover
+            thead.thead-inverse
+                tr
+                    th #
+                    th Value
+                    th Question
+                    th Answer
+                    th Round
+                    th Airdate / Show #
+                    th Category
+                    th Discipline
+                    th Sub Discipline
+            tbody
+                each use, i in questions
+                    tr
+                        th(scope='row') #{i}
+                        td #{use.value}
+                        td #{use.question}
+                        td 
+                          div#link #[a(href='/answer/#{use.answer}') LINK ]
+                          div#answer #{use.answer}
+                        td #{use.round}
+                        td #{use.air_date} / #[a(href='/show/#{use.show_number}') #{use.show_number} ]
+                        td #[a(href='/category/#{use.category}') #{use.category} ]
+                        td #[a(href='/discipline/#{use.discipline}') #{use.discipline} ]
+                        td #[a(href='/subDiscipline/#{use.subDiscipline}') #{use.subDiscipline} ]

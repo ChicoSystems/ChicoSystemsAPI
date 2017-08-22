@@ -1,0 +1,19 @@
+link(href='/stylesheets/style.css', rel='stylesheet')
+link(href='/stylesheets/bootstrap.css', rel='stylesheet')
+script(src='/javascripts/jquery-3.1.0.min.js')
+script(src='/javascripts/bootstrap.min.js')
+block content
+    h1.
+        classify test
+    div#map_canvas
+    div.table-responsive
+        table.table.table-sm.table-bordered.table-inverse.table-hover
+            thead.thead-inverse
+                tr
+                    th #
+                    th category
+            tbody
+                each use, i in response
+                    tr
+                        th(scope='row') #{i}
+                        td #[a(href='category/#{use}') #{use} ]
