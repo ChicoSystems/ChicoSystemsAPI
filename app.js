@@ -7,7 +7,7 @@ var bodyParser = require('body-parser');
 
 var mongo = require('mongodb');
 var monk = require('monk');
-var db = monk('localhost:27017/jeopardy');
+var db = monk('localhost:27017/ChicoSystems');
 var db_walmart = monk('localhost:27017/walmart');
 var db_quizbowl = monk('localhost:27017/quizbowl');
 
@@ -39,7 +39,7 @@ app.use(function(req,res,next){
 
 app.use('/', routes);
 //app.use('/users', users);
-//app.use('/api', api);
+app.use('/api', api);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

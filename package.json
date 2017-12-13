@@ -16,7 +16,8 @@
     "mongodb": "*",
     "monk": "*",
     "moment": "*",
-    "bootstrap" : "*",
-    "satelize" : "*"
+    "bootstrap": "*",
+    "request": "*",
+    "satelize": "*"
   }
 }
