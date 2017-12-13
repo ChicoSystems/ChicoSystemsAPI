@@ -29,7 +29,6 @@ router.get('/imgurdl/test/adduse', function(req, res) {
 
 /* POST to Add User Service */
 router.post('/imgurdl/adduse', function(req, res) {
-
     // Set our internal DB variable
     var db = req.db;
 
@@ -43,7 +42,12 @@ router.post('/imgurdl/adduse', function(req, res) {
 
     // Set our collection
     var collection = db.get('imgurdlUses');
-
+  console.log("ip: " + ip);
+  //if ip is a ipv4 subnet of an ipv6 address, remove ipv6 stuff
+  if(ip.substr(0, 7) == "::ffff:"){
+    ip = ip.substr(7);
+    console.log("ipv4: " + ip);
+  }
 satelize.satelize({ip: ip}, function(err, payload){
 
    console.log("payload: " + payload);
