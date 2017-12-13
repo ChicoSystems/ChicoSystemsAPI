@@ -2,15 +2,52 @@ var express = require('express');
 var satelize = require('satelize');
 var router = express.Router();
 
-router.get('/imgurdl/uses', function(req, res) {
-    var db = req.db;
-    var collection = db.get('imgurdlUses');
-    collection.find({},{},function(e,docs){
-	res.render('imgurdlUses', {
-	    moment : require('moment'),
-            "imgurdlUses" : docs
+router.get('/imgurdl/uses/:page', function(req, res, next){
+  var perPage = 100;
+  var db = req.db;
+  var collection = db.get('imgurdlUses');
+  collection.count({}, function(error, count){
+    if(error) return next(error);
+    var page = req.params.page || Math.ceil(count/perPage);
+    collection.find({},{skip: ((perPage * page) - perPage), limit: perPage},function(err, docs){
+        res.render('imgurdlUses_paged', {
+          moment : require('moment'),
+          "imgurdlUses" : docs,
+          current: page,
+          pages : Math.ceil(count/perPage),
+          count : count,
+          perPage : perPage
         });
     });
+    });
+});
+
+router.get('/imgurdl/uses', function(req, res) {
+  var perPage = 100;
+  var db = req.db;
+  var collection = db.get('imgurdlUses');
+  collection.count({}, function(error, count){
+    if(error) return next(error);
+    var page = req.params.page || Math.ceil(count/perPage);
+    collection.find({},{skip: ((perPage * page) - perPage), limit: perPage},function(err, docs){
+        res.render('imgurdlUses_paged', {
+          moment : require('moment'),
+          "imgurdlUses" : docs,
+          current: page,
+          pages : Math.ceil(count/perPage),
+          count : count,
+          perPage : perPage
+        });
+    });
+    });
+  //  var db = req.db;
+  //  var collection = db.get('imgurdlUses');
+  //  collection.find({},{},function(e,docs){
+//	res.render('imgurdlUses', {
+//	    moment : require('moment'),
+//            "imgurdlUses" : docs
+//        });
+//    });
 });
 
 router.post('/imgurdl/version', function(req, res) {

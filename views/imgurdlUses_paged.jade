@@ -5,8 +5,13 @@ script(src='/javascripts/bootstrap.min.js')
 script var info = !{JSON.stringify(imgurdlUses)}
 script(src='/javascripts/map.js')
 block content
+    div#count count: #{count}
+    div#records records: #{imgurdlUses.length}
+    div#pages pages: #{pages}
     h1.
-        ImgurDL Uses
+        ImgurDL Uses - #{count}
+    h2.
+        Page: #{current}
     img(src="")#map
     div#map_canvas
     div.table-responsive
@@ -25,7 +30,7 @@ block content
             tbody
                 each use, i in imgurdlUses
                     tr
-                        th(scope='row') #{i}
+                        th(scope='row') #{(perPage * current) - perPage + i}
                         td #{use.ip}
                         td #{moment(1000 * use.time).format('YYYY/MM/DD h:mm:ss a')}
                         td #{use.os}
@@ -35,3 +40,22 @@ block content
                         td
                             a(href='http://google.com/maps/?q=' + use.latitude + ',' + use.longitude) #{use.latitude} #{use.longitude}
                         td #{use.term}
+    nav
+      ul.pagination
+        li.page-item 
+          a.page-link(href="1") First
+        - if(current == 1)
+          li.page-item.disabled
+            a.page-link(href="1") Prev
+        - else
+          li.page-item
+            a.page-link(href="#{current-1}") Prev
+        - if(current == pages)
+          li.page-item.disabled
+        - else
+          li.page-item
+            a.page-link(href="#{parseFloat(current)+1}") Next
+        li.page-item
+          a.page-link(href="#{pages}") Last
+    
+          
