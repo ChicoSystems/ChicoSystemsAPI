@@ -72,6 +72,40 @@ router.post('/imgurdl/version', function(req, res) {
     });
 });
 
+//displays the update version form allowing admin to update
+//the current imgurdl version
+router.get('/imgurdl/updateversion', function(req, res){
+  var db = req.db;
+  var collection = db.get('imgurVersion');
+  collection.find({}, {}, function(e, docs){
+    res.render('updateversion', {
+      docs : docs
+    });
+  });
+});
+
+
+//backend of the update version page
+//takes the version and link admin submitted and
+//updates the db
+router.post('/imgurdl/setversion', function(req, res){
+  var ver = req.body.version;
+  var link = req.body.link;
+  console.log("Version updated: " + ver);
+  console.log("Link updated: " + link);
+  var db = req.db;
+  var collection = db.get('imgurVersion');
+  collection.update({}, {$set: {ver: ver, link: link}}, function(err, response){
+
+    var message = '';
+    if(!err){
+      message = {type: 'success', message: "Version Updated to : " + ver};
+    }else{
+      message = {type: "danger", message: err};
+    }
+    res.send(message);
+  });
+});
 
 /* GET New User page. */
 router.get('/imgurdl/test/adduse', function(req, res) {
