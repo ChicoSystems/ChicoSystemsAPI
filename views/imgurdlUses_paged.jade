@@ -42,39 +42,39 @@ block content
       ul.pagination
         - if(parseFloat(current) != 1)
           li.page-item 
-            a.page-link(href="1") First
+            a.page-link(href="/api/imgurdl/uses/1") First
         - if(current == 1)
           li.page-item.disabled
         - else
           li.page-item
-            a.page-link(href="#{current-1}") Prev
+            a.page-link(href="/api/imgurdl/uses/#{current-1}") Prev
         - if((parseFloat(current) - 50) >= 1)
           li.page-item
-            a.page-link(href="#{parseFloat(current)-50}") #{parseFloat(current)-50}
+            a.page-link(href="/api/imgurdl/uses/#{parseFloat(current)-50}") #{parseFloat(current)-50}
         - if((parseFloat(current) - 25) >= 1)
           li.page-item
-            a.page-link(href="#{parseFloat(current)-25}") #{parseFloat(current)-25}
+            a.page-link(href="/api/imgurdl/uses/#{parseFloat(current)-25}") #{parseFloat(current)-25}
         - if((parseFloat(current) -  5) >= 1)
           li.page-item
-            a.page-link(href="#{parseFloat(current)-5}") #{parseFloat(current)-5}
+            a.page-link(href="/api/imgurdl/uses/#{parseFloat(current)-5}") #{parseFloat(current)-5}
         li.page-item.active
           a.page-link #{current}
         - if((parseFloat(current) + 5) <= pages)
           li.page-item
-            a.page-link(href="#{parseFloat(current)+5}") #{parseFloat(current)+5}
+            a.page-link(href="/api/imgurdl/uses/#{parseFloat(current)+5}") #{parseFloat(current)+5}
         - if((parseFloat(current) + 25) <= pages)
           li.page-item
-            a.page-link(href="#{parseFloat(current)+25}") #{parseFloat(current)+25}
+            a.page-link(href="/api/imgurdl/uses/#{parseFloat(current)+25}") #{parseFloat(current)+25}
         - if((parseFloat(current) + 50) <= pages)
           li.page-item
-            a.page-link(href="#{parseFloat(current)+50}") #{parseFloat(current)+50}
+            a.page-link(href="/api/imgurdl/uses/#{parseFloat(current)+50}") #{parseFloat(current)+50}
         - if(current == pages)
           li.page-item.disabled
         - else
           li.page-item
-            a.page-link(href="#{parseFloat(current)+1}") Next
+            a.page-link(href="/api/imgurdl/uses/#{parseFloat(current)+1}") Next
         -if(parseFloat(current) != pages)
           li.page-item
-            a.page-link(href="#{pages}") Last
+            a.page-link(href="/api/imgurdl/uses/#{pages}") Last
     
           
