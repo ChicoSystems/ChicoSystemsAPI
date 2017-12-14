@@ -2,15 +2,66 @@ var express = require('express');
 var satelize = require('satelize');
 var router = express.Router();
 
-router.get('/imgurdl/uses', function(req, res) {
-    var db = req.db;
-    var collection = db.get('imgurdlUses');
-    collection.find({},{},function(e,docs){
-	res.render('imgurdlUses', {
-	    moment : require('moment'),
-            "imgurdlUses" : docs
+router.get('/imgurdl/distinct', function(req, res, next){
+  var db = req.db;
+  var collection = db.get('imgurdlUses');
+  collection.distinct('ip', {}, {}, function(error, distinct){
+    res.send("count: " + distinct.length);
+  });
+});
+
+router.get('/imgurdl/uses/:page', function(req, res, next){
+  var perPage = 100;
+  var db = req.db;
+  var collection = db.get('imgurdlUses');
+  collection.count({}, function(error, count){
+    if(error) return next(error);
+    var page = req.params.page || Math.ceil(count/perPage);
+    collection.find({},{skip: ((perPage * page) - perPage), limit: perPage},function(err, docs){
+      collection.distinct('ip', {}, {}, function(er, distinct){
+        res.render('imgurdlUses_paged', {
+          moment : require('moment'),
+          "imgurdlUses" : docs,
+          current: page,
+          pages : Math.ceil(count/perPage),
+          count : count,
+          perPage : perPage,
+          distinct : distinct.length
         });
+      });
     });
+    });
+});
+
+router.get('/imgurdl/uses', function(req, res) {
+  var perPage = 100;
+  var db = req.db;
+  var collection = db.get('imgurdlUses');
+  collection.count({}, function(error, count){
+    if(error) return next(error);
+    var page = req.params.page || Math.ceil(count/perPage);
+    collection.find({},{skip: ((perPage * page) - perPage), limit: perPage},function(err, docs){
+      collection.distinct('ip', {}, {}, function(er, distinct){
+        res.render('imgurdlUses_paged', {
+          moment : require('moment'),
+          "imgurdlUses" : docs,
+          current: page,
+          pages : Math.ceil(count/perPage),
+          count : count,
+          perPage : perPage,
+          distinct : distinct.length
+        });
+      });
+    });
+    });
+  //  var db = req.db;
+  //  var collection = db.get('imgurdlUses');
+  //  collection.find({},{},function(e,docs){
+//	res.render('imgurdlUses', {
+//	    moment : require('moment'),
+//            "imgurdlUses" : docs
+//        });
+//    });
 });
 
 router.post('/imgurdl/version', function(req, res) {
@@ -21,6 +72,40 @@ router.post('/imgurdl/version', function(req, res) {
     });
 });
 
+//displays the update version form allowing admin to update
+//the current imgurdl version
+router.get('/imgurdl/updateversion', function(req, res){
+  var db = req.db;
+  var collection = db.get('imgurVersion');
+  collection.find({}, {}, function(e, docs){
+    res.render('updateversion', {
+      docs : docs
+    });
+  });
+});
+
+
+//backend of the update version page
+//takes the version and link admin submitted and
+//updates the db
+router.post('/imgurdl/setversion', function(req, res){
+  var ver = req.body.version;
+  var link = req.body.link;
+  console.log("Version updated: " + ver);
+  console.log("Link updated: " + link);
+  var db = req.db;
+  var collection = db.get('imgurVersion');
+  collection.update({}, {$set: {ver: ver, link: link}}, function(err, response){
+
+    var message = '';
+    if(!err){
+      message = {type: 'success', message: "Version Updated to : " + ver};
+    }else{
+      message = {type: "danger", message: err};
+    }
+    res.send(message);
+  });
+});
 
 /* GET New User page. */
 router.get('/imgurdl/test/adduse', function(req, res) {
@@ -29,7 +114,6 @@ router.get('/imgurdl/test/adduse', function(req, res) {
 
 /* POST to Add User Service */
 router.post('/imgurdl/adduse', function(req, res) {
-
     // Set our internal DB variable
     var db = req.db;
 
@@ -43,7 +127,12 @@ router.post('/imgurdl/adduse', function(req, res) {
 
     // Set our collection
     var collection = db.get('imgurdlUses');
-
+  console.log("ip: " + ip);
+  //if ip is a ipv4 subnet of an ipv6 address, remove ipv6 stuff
+  if(ip.substr(0, 7) == "::ffff:"){
+    ip = ip.substr(7);
+    console.log("ipv4: " + ip);
+  }
 satelize.satelize({ip: ip}, function(err, payload){
 
    console.log("payload: " + payload);

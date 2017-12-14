@@ -1,0 +1,30 @@
+link(href='/stylesheets/style.css', rel='stylesheet')
+link(href='/stylesheets/bootstrap.css', rel='stylesheet')
+script(src='/javascripts/jquery-3.1.0.min.js')
+script(src='/javascripts/bootstrap.min.js')
+script(src='/javascripts/updateversion.js')
+head
+  title Update Version
+body
+  div.container
+    div.row
+      div.col-lg8.col-lg-offset-2
+        h1 Update ImgurDL Version
+        p.lead When updating ImgurDL to a new version, change the version number here to notify users.
+        form#contact-form(method="post" action="setversion" role="form")
+          div.messages
+          div.controls
+            div.row
+              div.col-md-6
+                div.form-group
+                  label(for="form_version") New Version
+                  input.form-control#form_version(type="text" name="version" value="#{docs[0].ver}")
+                  div.helpblock.with-errors
+              
+              div.col-md-6
+                div.form-group
+                  label(for="form_link") New Download Link
+                  input.form-control#form_link(type="text" name="link" value="#{docs[0].link}")
+                  div.helpblock.with-errors
+              div.col-md-12
+                input.btn.btn-success.btn-send(type="submit" value="Update")
