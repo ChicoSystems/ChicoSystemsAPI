@@ -2,6 +2,14 @@ var express = require('express');
 var satelize = require('satelize');
 var router = express.Router();
 
+router.get('/imgurdl/distinct', function(req, res, next){
+  var db = req.db;
+  var collection = db.get('imgurdlUses');
+  collection.distinct('ip', {}, {}, function(error, distinct){
+    res.send("count: " + distinct.length);
+  });
+});
+
 router.get('/imgurdl/uses/:page', function(req, res, next){
   var perPage = 100;
   var db = req.db;
@@ -10,14 +18,17 @@ router.get('/imgurdl/uses/:page', function(req, res, next){
     if(error) return next(error);
     var page = req.params.page || Math.ceil(count/perPage);
     collection.find({},{skip: ((perPage * page) - perPage), limit: perPage},function(err, docs){
+      collection.distinct('ip', {}, {}, function(er, distinct){
         res.render('imgurdlUses_paged', {
           moment : require('moment'),
           "imgurdlUses" : docs,
           current: page,
           pages : Math.ceil(count/perPage),
           count : count,
-          perPage : perPage
+          perPage : perPage,
+          distinct : distinct.length
         });
+      });
     });
     });
 });
@@ -30,14 +41,17 @@ router.get('/imgurdl/uses', function(req, res) {
     if(error) return next(error);
     var page = req.params.page || Math.ceil(count/perPage);
     collection.find({},{skip: ((perPage * page) - perPage), limit: perPage},function(err, docs){
+      collection.distinct('ip', {}, {}, function(er, distinct){
         res.render('imgurdlUses_paged', {
           moment : require('moment'),
           "imgurdlUses" : docs,
           current: page,
           pages : Math.ceil(count/perPage),
           count : count,
-          perPage : perPage
+          perPage : perPage,
+          distinct : distinct.length
         });
+      });
     });
     });
   //  var db = req.db;

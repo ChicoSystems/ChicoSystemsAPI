@@ -6,9 +6,9 @@ script var info = !{JSON.stringify(imgurdlUses)}
 script(src='/javascripts/map.js')
 block content
     h1.
-        ImgurDL Uses - #{count}
+        ImgurDL Uses:#{count}  - Distinct IPs:#{distinct}
     h3.
-        Page: #{current}
+        Page: #{current} - Uses: #{count} - Users: #{distinct}
     img(src="")#map
     div#map_canvas
     div.table-responsive
@@ -36,7 +36,8 @@ block content
                         td #{use.timezone}
                         td
                             a(href='http://google.com/maps/?q=' + use.latitude + ',' + use.longitude) #{use.latitude} #{use.longitude}
-                        td #{use.term}
+                        td 
+                          a(href="#{use.term}") #{use.term}
     nav
       ul.pagination
         li.page-item 
