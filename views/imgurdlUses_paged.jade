@@ -41,19 +41,18 @@ block content
     nav
       ul.pagination
         li.page-item 
-          a.page-link(href="http://chicosystems.com:3000/api/imgurdl/uses/1") First
+          a.page-link(href="1") First
         - if(current == 1)
           li.page-item.disabled
-            a.page-link(href="1") Prev
         - else
           li.page-item
-            a.page-link(href="http://chicosystems.com:3000/api/imgurdl/uses/#{current-1}") Prev
+            a.page-link(href="#{current-1}") Prev
         - if(current == pages)
           li.page-item.disabled
         - else
           li.page-item
-            a.page-link(href="http://chicosystems.com:3000/api/imgurdl/uses/#{parseFloat(current)+1}") Next
+            a.page-link(href="#{parseFloat(current)+1}") Next
         li.page-item
-          a.page-link(href="http://chicosystems.com:3000/api/imgurdl/uses/#{pages}") Last
+          a.page-link(href="#{pages}") Last
     
           
