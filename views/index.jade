@@ -1,5 +1,100 @@
-extends layout
-
-block content
-  h1= title
-  p Welcome to #{title}
+link(href='/stylesheets/style.css', rel='stylesheet')
+link(href='/stylesheets/bootstrap.css', rel='stylesheet')
+script(src='/javascripts/jquery-3.1.0.min.js')
+script(src='/javascripts/bootstrap.min.js')
+head
+  title Menu
+body
+  div.container
+    div.row
+      div.col-lg8.col-lg
+        h1 Menu
+        p.lead Api's and Pages available in the ChicoSystemsAPI
+    div.row
+      div.col-lh8.col-lg
+        h3 API
+      table.table
+        thead.thead-dark
+          tr
+            th(scope="col") Type
+            th(scope="col") Call
+            th(scope="col") Variables
+            th(scope="col") Details
+        tbody
+          tr
+            td
+              p POST
+            td
+              p /api/imgurdl/version
+            td
+              p
+            td
+              p Returns the Current Version of ImgurDL
+          tr
+            td
+              p GET
+            td
+              p /api/imgurdl/distinct
+            td
+              p
+            td
+              p Displays the number of distinct IP's that have used ImgurDL
+          tr
+            td
+              p POST
+            td
+              p /api/imgurdl/setversion
+            td
+              p ver, link
+            td
+              p Updates the current version, and download link of ImgurDL
+          tr
+            td
+              p POST
+            td
+              p /api/imgurdl/adduse
+            td
+              p time, term, os, ver, ip
+            td
+              p Updates the ImgurDL uses list.
+          tr
+            td
+              p
+            td
+              p
+            td
+              p
+            td
+              p
+    div.row
+      h3 Pages
+      table.table
+        thead.thead-dark
+          tr
+            th(scope="col") Link
+            th(scope="col") Details
+        tbody
+          tr
+            td
+              p 
+                a(href="/") /
+            td
+              p This Page
+          tr
+            td
+              p 
+                a(href="/api/imgurdl/updateversion") Update ImgurDL Version
+            td
+              p A page that allows the admin to update the current ImgurDL version & download link
+          tr
+            td
+              p 
+                a(href="/api/imgurdl/uses") ImgurDL Uses - Last Page
+            td
+              p Displays the latest ImgurDL Uses
+          tr
+            td
+              p /api/imgurdl/uses/:page
+            td
+              p Displays the ImgurDL Uses given page
+ 

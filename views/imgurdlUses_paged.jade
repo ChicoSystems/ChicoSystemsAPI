@@ -40,19 +40,41 @@ block content
                           a(href="#{use.term}") #{use.term}
     nav
       ul.pagination
-        li.page-item 
-          a.page-link(href="1") First
+        - if(parseFloat(current) != 1)
+          li.page-item 
+            a.page-link(href="1") First
         - if(current == 1)
           li.page-item.disabled
         - else
           li.page-item
             a.page-link(href="#{current-1}") Prev
+        - if((parseFloat(current) - 50) >= 1)
+          li.page-item
+            a.page-link(href="#{parseFloat(current)-50}") #{parseFloat(current)-50}
+        - if((parseFloat(current) - 25) >= 1)
+          li.page-item
+            a.page-link(href="#{parseFloat(current)-25}") #{parseFloat(current)-25}
+        - if((parseFloat(current) -  5) >= 1)
+          li.page-item
+            a.page-link(href="#{parseFloat(current)-5}") #{parseFloat(current)-5}
+        li.page-item.active
+          a.page-link #{current}
+        - if((parseFloat(current) + 5) <= pages)
+          li.page-item
+            a.page-link(href="#{parseFloat(current)+5}") #{parseFloat(current)+5}
+        - if((parseFloat(current) + 25) <= pages)
+          li.page-item
+            a.page-link(href="#{parseFloat(current)+25}") #{parseFloat(current)+25}
+        - if((parseFloat(current) + 50) <= pages)
+          li.page-item
+            a.page-link(href="#{parseFloat(current)+50}") #{parseFloat(current)+50}
         - if(current == pages)
           li.page-item.disabled
         - else
           li.page-item
             a.page-link(href="#{parseFloat(current)+1}") Next
-        li.page-item
-          a.page-link(href="#{pages}") Last
+        -if(parseFloat(current) != pages)
+          li.page-item
+            a.page-link(href="#{pages}") Last
     
           
