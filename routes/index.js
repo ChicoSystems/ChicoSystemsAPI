@@ -5,7 +5,9 @@ var request = require('request');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; NODE_TLS_REJECT_UNAUTHORIZED=0
 
 function addSlashes( str ) {
-    return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+//    return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+    return (str + '').replace(/[&\/\\#,+()$~%.'":*?<>{}]/g,'');
+
 }
 var workingRecords = [];
 var globalRecordNum = 0;
@@ -53,8 +55,8 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/category', function(req, res) {
-    var db = req.db;
-    var collection = db.get('questions');
+    var db = req.db_quizgame;
+    var collection = db.get('jQuestions');
    // collection.find({"category" : "SCIENCE"},{},function(e,docs){
     //    res.render('category', {
     //        "category" : docs
@@ -68,9 +70,9 @@ router.get('/category', function(req, res) {
 });
 
 router.get('/show/:showNum', function(req, res){
-	var db = req.db;
+	var db = req.db_quizgame;
 	var showNum = req.params.showNum;
-	var collection = db.get('questions');
+	var collection = db.get('jQuestions');
 	collection.find({"show_number" : showNum},{}, function(e, docs){
 		res.render('viewshownum', {
 			"questions" : docs
@@ -79,9 +81,9 @@ router.get('/show/:showNum', function(req, res){
 });
 
 router.get('/discipline/:discipline', function(req, res){
-	var db = req.db;
+	var db = req.db_quizgame;
 	var discipline = req.params.discipline;
-	var collection = db.get('questions');
+	var collection = db.get('jQuestions');
 	collection.find({"discipline" : discipline},{}, function(e, docs){
 		res.render('viewdiscipline', {
 			"questions" : docs
@@ -90,9 +92,9 @@ router.get('/discipline/:discipline', function(req, res){
 });
 
 router.get('/subdiscipline/:subdiscipline', function(req, res){
-	var db = req.db;
+	var db = req.db_quizgame;
 	var subdiscipline = req.params.subdiscipline;
-	var collection = db.get('questions');
+	var collection = db.get('jQuestions');
 	collection.find({"subDiscipline" : subdiscipline},{}, function(e, docs){
 		res.render('viewsubdiscipline',{
 			"questions" : docs
@@ -101,9 +103,9 @@ router.get('/subdiscipline/:subdiscipline', function(req, res){
 });
 
 router.get('/answer/:answer', function(req, res){
-	var db = req.db;
+	var db = req.db_quizgame;
 	var answer = req.params.answer;
-	var collection = db.get('questions');
+	var collection = db.get('jQuestions');
 	collection.find({"answer" : answer},{}, function(e, docs){
 		res.render('viewanswer', {
 			"questions" : docs
@@ -112,9 +114,9 @@ router.get('/answer/:answer', function(req, res){
 });
 
 router.get('/category/:catName', function(req, res) {
-    var db = req.db;
+    var db = req.db_quizgame;
     var catName = req.params.catName;
-    var collection = db.get('questions');
+    var collection = db.get('jQuestions');
     collection.find({"category" : catName},{},function(e,docs){
         res.render('viewcategory', {
             "questions" : docs
@@ -150,9 +152,9 @@ router.get('/classify2', function(req, res){
 
 //test the end step in our api call, where we update the db with items gotten from the uClassify api
 router.get('/classify5/:catName', function (req, res){
-	var db = req.db;
+	var db = req.db_quizgame;
 	var catName = req.params.catName;
-	var collection = db.get('questions');
+	var collection = db.get('jQuestions');
 	collection.find({"category" : catName},{}, function(e, docs){
 		var workingRecords = [];
                 //parse question texts into proper post_data and send to uclassify api
@@ -199,9 +201,9 @@ router.get('/classify5/:catName', function (req, res){
 //6 didn't work, lets try 7
 router.get('/classify7/:catName', function(req, res){
 	workingRecords = [];
-	db = req.db;
+	db = req.db_quizgame;
 	var catName = req.params.catName;
-	collection = db.get('questions');
+	collection = db.get('jQuestions');
 
 	collection.find({"category" : catName},[],function(e, docs){
 
@@ -254,6 +256,7 @@ function getClassifier(discipline){
 function classifyRequest(recordNum){
 	globalRecordNum = recordNum; //used to give callback access to current recordNum
 	var post_data = '{"texts":[';
+  if(workingRecords == null || workingRecords[recordNum] == null) return 0;
 	var newString = workingRecords[recordNum]["question"];
 	newString = addSlashes(newString);
 	post_data += '" ';
@@ -264,6 +267,7 @@ function classifyRequest(recordNum){
 	post_data += workingRecords[recordNum]["answer"];
 	post_data += '"';
 	post_data += ']}';
+  post_data = JSON.parse(post_data);
 	console.log("post_data: " + post_data);
 	var classifer = getClassifier(workingRecords[recordNum]["discipline"]);
 	var url = "https://api.uclassify.com/v1/uClassify/" + classifer + "/classify";
@@ -347,9 +351,9 @@ function classifyCallback(error, response, body){
 
 //classifies the subdisciplines of all questions in a category, whose disciplines have already been classified.
 router.get('/classify6/:catName', function(req, res){
-	var db = req.db;
+	var db = req.db_quizgame;
 	var catName = req.params.catName;
-	var collection = db.get('questions');
+	var collection = db.get('jQuestions');
 	
     //First we query the local db for all records with the given category, that also have a discipline associated, but don't have a subdiscipline.
     collection.find({"category" : catName}, {}, function(e, docs){
@@ -417,6 +421,7 @@ router.get('/classify6/:catName', function(req, res){
 
 		//add end to post_data string
 		post_data += ']}';
+    post_data = JSON.parse(post_data);
 		console.log("post_data: " + post_data);
 		
 		var url = "https://api.uclassify.com/v1/uClassify/" + classifierName[i] + "/classify";
@@ -508,9 +513,9 @@ router.get('/classify6/:catName', function(req, res){
 //classifies the disciplines of all questions in a category, that have not yet been classified.
 router.get('/classify4/:catName', function(req, res){
 	//query local db for a set of questions
-	var db = req.db;
+	var db = req.db_quizgame;
 	var catName = req.params.catName;
-	var collection = db.get('questions');
+	var collection = db.get('jQuestions');
 	collection.find({"category" : catName},{},function(e,docs){
 		//res.send(docs);
 
@@ -557,6 +562,10 @@ router.get('/classify4/:catName', function(req, res){
 		}	
 		//add end to post_data
 		post_data += ']}';
+
+		console.log("postDataString: " + post_data);
+
+    post_data = JSON.parse(post_data);
 	
 		console.log("postData: " + post_data);
 	
@@ -610,10 +619,11 @@ router.get('/classify4/:catName', function(req, res){
 	                                {"$set" : {"discipline" : bestCategory[i]}}
 	                        );
 	
-	                        res.render('viewcategory', {
-	                            "questions" : docs
-	                        });
-
+                          if(i == docs.length -1){
+	                          res.render('viewcategory', {
+	                             "questions" : docs
+	                          });
+                          }
 
 
                 //      }
