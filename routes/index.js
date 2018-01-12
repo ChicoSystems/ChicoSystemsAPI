@@ -5,7 +5,15 @@ var request = require('request');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0"; NODE_TLS_REJECT_UNAUTHORIZED=0
 
 function addSlashes( str ) {
-//    return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+//    return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0')k;
+	str = str.replace(/\\n/g, "\\n")  
+               .replace(/\\'/g, "\\'")
+               .replace(/\\"/g, '\\"')
+               .replace(/\\&/g, "\\&")
+               .replace(/\\r/g, "\\r")
+               .replace(/\\t/g, "\\t")
+               .replace(/\\b/g, "\\b")
+               .replace(/\\f/g, "\\f");
     return (str + '').replace(/[&\/\\#,+()$~%.'":*?<>{}]/g,'');
 
 }
@@ -13,6 +21,28 @@ var workingRecords = [];
 var globalRecordNum = 0;
 var db;
 var collection;
+//var token =  'Token ZdlVUz79qRtZ'; //itravers
+//var token =  'Token NX8XGywpH4tT';  //isaac
+//var token =  'Token Y8U6VaU7Ss1S';  //isaac1
+//var token =  'Token kFEeJ7GngL9I';  //isaac2
+//var token =  'Token lk2394B0WKVq';  //isaac3
+//var token =  'Token M4LK7r55C93z';  //isaac4
+//var token =  'Token 6piKN7jDmtre';  //isaac5
+//var token =  'Token zA4m643x4hNR';  //isaac6
+//var token =  'Token qrxYBER7J9ln';  //isaac7
+//var token =  'Token IrPwW5WoHL5O';  //isaac8
+//var token =  'Token 14uC9Pgf6bqj';  //isaac9
+//var token =  'Token YyQqYrVfL5sp';  //isaac10
+//var token =  'Token TiCOE79wOUeW';  //isaac11
+//var token =  'Token cTtnoyUWISHP';  //isaac12
+//var token =  'Token cEYDndIqDxMV';  //isaac13
+//var token =  'Token hkZD2twIAMlU';  //isaac14
+var token =  'Token Xuuzq4feWowd';  //isaac15
+
+//var token =  'Token YHYlEPYxgLwQ';  //confusedvirtuoso
+//var token =  'Token iXcQ55mhlVYE';  //personsaddress
+//var token =  'Token a42MP0XPJqdQ';  //ourautodidact
+
 
 router.get('/quizbowl/category', function(req, res){
 	var db = req.db_quizbowl;
@@ -135,7 +165,8 @@ router.get('/classify2', function(req, res){
 		json: true,
 		 headers: {
                         'Content-Type' : 'application/json',
-                        'Authorization' : 'Token ZdlVUz79qRtZ'
+                        //'Authorization' : 'Token ZdlVUz79qRtZ'
+                        'Authorization' : token
                 	},
 		body: jsonData
 		}, function(error, response, body){
@@ -260,11 +291,11 @@ function classifyRequest(recordNum){
 	var newString = workingRecords[recordNum]["question"];
 	newString = addSlashes(newString);
 	post_data += '" ';
-	post_data += workingRecords[recordNum]["category"];
+	post_data += addSlashes(workingRecords[recordNum]["category"]);
 	post_data += " ";
 	post_data += newString;
 	post_data += " ";
-	post_data += workingRecords[recordNum]["answer"];
+	post_data += addSlashes(workingRecords[recordNum]["answer"]);
 	post_data += '"';
 	post_data += ']}';
   post_data = JSON.parse(post_data);
@@ -282,7 +313,8 @@ function classifyRequest(recordNum){
 			json: true,
 			headers: {
                         	'Content-Type' : 'application/json',
-                                'Authorization' : 'Token ZdlVUz79qRtZ'
+                                //'Authorization' : 'Token ZdlVUz79qRtZ'
+                                'Authorization' : token
                         },
                         body: post_data
 		},
@@ -436,7 +468,8 @@ router.get('/classify6/:catName', function(req, res){
 				json: true,
 				headers: {
 					'Content-Type' : 'application/json',
-		                      	'Authorization' : 'Token ZdlVUz79qRtZ'
+		                      	//'Authorization' : 'Token ZdlVUz79qRtZ'
+		                      	'Authorization' : token
 				},
 				body: post_data
 			}, function(error, response, body){
@@ -547,11 +580,11 @@ router.get('/classify4/:catName', function(req, res){
 
 			post_data += '"';
 			post_data += ' ';
-			post_data += workingRecords[i]["category"];
+			post_data += addSlashes(workingRecords[i]["category"]);
 			post_data += ' ';
 			post_data += newString;
 			post_data += ' ';
-			post_data += workingRecords[i]["answer"];
+			post_data += addSlashes(workingRecords[i]["answer"]);
 			post_data += ' ';
 			post_data += '"';	
 			
@@ -576,7 +609,8 @@ router.get('/classify4/:catName', function(req, res){
                 json: true,
                  headers: {
                         'Content-Type' : 'application/json',
-                        'Authorization' : 'Token ZdlVUz79qRtZ'
+                        //'Authorization' : 'Token ZdlVUz79qRtZ'
+                        'Authorization' : token
                         },
                 body: post_data
                 }, function(error, response, body){
@@ -595,8 +629,11 @@ router.get('/classify4/:catName', function(req, res){
 						largestPIndex = j;
 					}
 				}
-				
+			if(body != null && body[i] != null && body[i]["classification"] != null){ 	
 				bestCategory.push(body[i]["classification"][largestPIndex]["className"]);
+		}else{
+			return 0;
+		}
 			}
 
 			console.log("the following are the best categories for each question, in order");
@@ -703,7 +740,8 @@ router.get('/classify', function(req, res) {
 		method : 'POST',
 		headers: {
 			'Content-Type' : 'application/json',
-			'Authorization' : 'Token ZdlVUz79qRtZ'
+			//'Authorization' : 'Token ZdlVUz79qRtZ'
+			'Authorization' : token
 		}
 	}
 	console.log("options: " + options);
