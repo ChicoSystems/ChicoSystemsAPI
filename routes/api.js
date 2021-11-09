@@ -54,14 +54,6 @@ router.get('/imgurdl/uses', function(req, res) {
       });
     });
     });
-  //  var db = req.db;
-  //  var collection = db.get('imgurdlUses');
-  //  collection.find({},{},function(e,docs){
-//	res.render('imgurdlUses', {
-//	    moment : require('moment'),
-//            "imgurdlUses" : docs
-//        });
-//    });
 });
 
 router.post('/imgurdl/version', function(req, res) {
@@ -69,6 +61,73 @@ router.post('/imgurdl/version', function(req, res) {
     var collection = db.get('imgurVersion');
     collection.find({},{},function(e,docs){
         res.send({"imgurdlVersion" : docs});
+    });
+});
+
+
+
+/* POST to Add User Service */
+router.post('/mare/adduse', function (req, res) {
+    // Set our internal DB variable
+    var db = req.db;
+
+    // Get our form values. These rely on the "name" attributes
+    //var time = req.body.time;
+    var time = Math.floor(new Date() / 1000);
+    var computer = req.body.computer;
+    var os = req.body.os;
+    var ver = req.body.ver;
+    var ip = req.connection.remoteAddress;
+    var appName = req.body.appName;
+    var notes = req.body.notes;
+    var username = req.body.username;
+
+    // Set our collection
+    var collection = db.get('mareUses');
+    //console.log("ip: " + ip);
+    //if ip is a ipv4 subnet of an ipv6 address, remove ipv6 stuff
+    if (ip.substr(0, 7) == "::ffff:") {
+        ip = ip.substr(7);
+        //console.log("ipv4: " + ip);
+    }
+
+    // Submit to the DB
+    collection.insert({
+        "time": time,
+        "os": os,
+        "ip": ip,
+        "ver": ver,
+        "appName": appName,
+        "computer": computer,
+        "notes": notes,
+        "username": username
+    }, function (err, doc) {
+        if (err) {
+            // If it failed, return error
+            res.send("There was a problem adding the information to the database.");
+        }
+        else {
+            // And forward to success page
+            res.send("success");
+        }
+    });
+});
+
+
+
+// Called when an http post request is made for a mare app version
+router.get('/mare/version/:appName', function (req, res) {
+
+    // This is our main mongo db
+    var db = req.db;
+
+    // The user will pass the requested appName in the api request
+    var appName = req.params.appName;
+
+    // we save our app version information in the mareVersion collection
+    var collection = db.get('mareVersion');
+    collection.find({ "appName": appName }, {}, function (e, docs) {
+        res.send({ "appVersion": docs });
     });
 });
 
