@@ -56,6 +56,29 @@ router.get('/imgurdl/uses', function(req, res) {
     });
 });
 
+router.get('/mare/uses', function (req, res) {
+    var perPage = 100;
+    var db = req.db;
+    var collection = db.get('mareUses');
+    collection.count({}, function (error, count) {
+        if (error) return next(error);
+        var page = req.params.page || Math.ceil(count / perPage);
+        collection.find({}, { skip: ((perPage * page) - perPage), limit: perPage }, function (err, docs) {
+            collection.distinct('ip', {}, {}, function (er, distinct) {
+                res.render('mareUses_paged', {
+                    moment: require('moment'),
+                    "mareUses": docs,
+                    current: page,
+                    pages: Math.ceil(count / perPage),
+                    count: count,
+                    perPage: perPage,
+                    distinct: distinct.length
+                });
+            });
+        });
+    });
+});
+
 router.post('/imgurdl/version', function(req, res) {
     var db = req.db;
     var collection = db.get('imgurVersion');
