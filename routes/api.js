@@ -79,6 +79,31 @@ router.get('/mare/uses', function (req, res) {
     });
 });
 
+router.get('/mare/uses/:page', function (req, res, next) {
+    var perPage = 100;
+    var db = req.db;
+    var collection = db.get('mareUses');
+    collection.count({}, function (error, count) {
+        if (error) return next(error);
+        var page = req.params.page || Math.ceil(count / perPage);
+        collection.find({}, { skip: ((perPage * page) - perPage), limit: perPage }, function (err, docs) {
+            collection.distinct('ip', {}, {}, function (er, distinct) {
+                res.render('mareUses_paged', {
+                    moment: require('moment'),
+                    "mareUses": docs,
+                    current: page,
+                    pages: Math.ceil(count / perPage),
+                    count: count,
+                    perPage: perPage,
+                    distinct: distinct.length
+                });
+            });
+        });
+    });
+});
+
+
+
 router.post('/imgurdl/version', function(req, res) {
     var db = req.db;
     var collection = db.get('imgurVersion');
@@ -137,8 +162,34 @@ router.post('/mare/adduse', function (req, res) {
 });
 
 
+// called when an http get request is made to update a mare app version number
+router.get('/mare/updateVersion/:appName/:versionNum', function (req, res) {
 
-// Called when an http post request is made for a mare app version
+    // This is our main mongo db
+    var db = req.db;
+
+    // The user will pass the requested appName in the api request
+    var appName = req.params.appName;
+
+    // The user will pass the requested version number
+    var versionNum = req.params.versionNum;
+
+    // we save our app version information in the mareVersion collection
+    var collection = db.get('mareVersion');
+
+    collection.update({ "appName": appName }, { $set: { "appName": appName, "appVersion": versionNum } }, function (err, res) {
+        if (err) throw err;
+        //res.send({ "MAREappVersion": docs });
+    });
+
+   // collection.updateMany({ "appName": appName }, {{ $set: { "appName": appName, "appVersion": versionNum} }}, function (e, docs) {
+   //     res.send({ "MAREappVersion": docs });
+   // });
+});
+
+
+
+// Called when an http get request is made for a mare app version
 router.get('/mare/version/:appName', function (req, res) {
 
     // This is our main mongo db
@@ -155,6 +206,18 @@ router.get('/mare/version/:appName', function (req, res) {
 });
 
 //displays the update version form allowing admin to update
+//the current mare version
+router.get('/mare/updateversion', function (req, res) {
+    var db = req.db;
+    var collection = db.get('mareVersion');
+    collection.find({}, {}, function (e, docs) {
+        res.render('MAREupdateversion', {
+            docs: docs
+        });
+    });
+});
+
+//displays the update version form allowing admin to update
 //the current imgurdl version
 router.get('/imgurdl/updateversion', function(req, res){
   var db = req.db;
@@ -164,6 +227,29 @@ router.get('/imgurdl/updateversion', function(req, res){
       docs : docs
     });
   });
+});
+
+
+//backend of the update version page
+//takes the version and link admin submitted and
+//updates the db
+router.post('/mare/setversion', function (req, res) {
+    var appName = req.body.appName;
+    var appVersion = req.body.newVersion;
+    console.log("Version updated: " + appName);
+    console.log("to " + appVersion);
+    var db = req.db;
+    var collection = db.get('mareVersion');
+    collection.update({appName: appName}, { $set: { appName: appName, appVersion: appVersion } }, function (err, response) {
+
+        var message = '';
+        if (!err) {
+            message = { type: 'success', message: "Version Updated to : " + appVersion };
+        } else {
+            message = { type: "danger", message: err };
+        }
+        res.send(message);
+    });
 });
 
 

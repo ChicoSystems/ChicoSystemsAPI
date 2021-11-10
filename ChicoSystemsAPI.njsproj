@@ -50,6 +50,7 @@
     <Content Include="views\layout.pug" />
     <Content Include="views\error.pug" />
     <Content Include="views\quizCategory.jade" />
+    <Content Include="views\MAREupdateversion.jade" />
     <Content Include="views\updateversion.jade" />
     <Content Include="views\viewanswer.jade" />
     <Content Include="views\viewcategory.jade" />
