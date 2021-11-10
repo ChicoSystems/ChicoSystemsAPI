@@ -37,9 +37,27 @@
     <Content Include="package.json" />
     <Content Include="public\stylesheets\main.css" />
     <Content Include="README.md" />
+    <Content Include="views\adduse.jade" />
+    <Content Include="views\category.jade" />
+    <Content Include="views\classify.jade" />
+    <Content Include="views\error.jade" />
+    <Content Include="views\imgurdlUses.jade" />
+    <Content Include="views\mareUses_paged.jade" />
+    <Content Include="views\imgurdlUses_paged.jade" />
+    <Content Include="views\index.jade" />
     <Content Include="views\index.pug" />
+    <Content Include="views\layout.jade" />
     <Content Include="views\layout.pug" />
     <Content Include="views\error.pug" />
+    <Content Include="views\quizCategory.jade" />
+    <Content Include="views\MAREupdateversion.jade" />
+    <Content Include="views\updateversion.jade" />
+    <Content Include="views\viewanswer.jade" />
+    <Content Include="views\viewcategory.jade" />
+    <Content Include="views\viewcategory_quizbowl.jade" />
+    <Content Include="views\viewdiscipline.jade" />
+    <Content Include="views\viewshownum.jade" />
+    <Content Include="views\viewsubdiscipline.jade" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="public\" />

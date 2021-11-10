@@ -1,0 +1,76 @@
+link(href='/stylesheets/style.css', rel='stylesheet')
+link(href='/stylesheets/bootstrap.css', rel='stylesheet')
+script(src='/javascripts/jquery-3.1.0.min.js')
+script(src='/javascripts/bootstrap.min.js')
+script var info = !{JSON.stringify(mareUses)}
+script(src='/javascripts/map.js')
+block content
+    h1.
+        Mare Script Uses
+    h3.
+        Page: #{current} - Uses: #{count} - Users: #{distinct}
+    div.table-responsive
+        table.table.table-sm.table-bordered.table-inverse.table-hover
+            thead.thead-inverse
+                tr
+                    th #
+                    th ip
+                    th Time
+                    th App Name
+                    th Version
+                    th OS
+                    th Computer
+                    th User Name
+                    th Notes
+            tbody
+                each use, i in mareUses
+                    tr
+                        th(scope='row') #{(perPage * current) - perPage + i}
+                        td #{use.ip}
+                        td #{moment(1000 * use.time).format('YYYY/MM/DD h:mm:ss a')}
+                        td #{use.appName}
+                        td #{use.ver}
+                        td #{use.os}
+                        td #{use.computer}
+                        td #{use.username}
+                        td  #{use.notes}
+    nav
+      ul.pagination
+        - if(parseFloat(current) != 1)
+          li.page-item 
+            a.page-link(href="/api/mare/uses/1") First
+        - if(current == 1)
+          li.page-item.disabled
+        - else
+          li.page-item
+            a.page-link(href="/api/mare/uses/#{current-1}") Prev
+        - if((parseFloat(current) - 50) >= 1)
+          li.page-item
+            a.page-link(href="/api/mare/uses/#{parseFloat(current)-50}") #{parseFloat(current)-50}
+        - if((parseFloat(current) - 25) >= 1)
+          li.page-item
+            a.page-link(href="/api/mare/uses/#{parseFloat(current)-25}") #{parseFloat(current)-25}
+        - if((parseFloat(current) -  5) >= 1)
+          li.page-item
+            a.page-link(href="/api/mare/uses/#{parseFloat(current)-5}") #{parseFloat(current)-5}
+        li.page-item.active
+          a.page-link #{current}
+        - if((parseFloat(current) + 5) <= pages)
+          li.page-item
+            a.page-link(href="/api/mare/uses/#{parseFloat(current)+5}") #{parseFloat(current)+5}
+        - if((parseFloat(current) + 25) <= pages)
+          li.page-item
+            a.page-link(href="/api/mare/uses/#{parseFloat(current)+25}") #{parseFloat(current)+25}
+        - if((parseFloat(current) + 50) <= pages)
+          li.page-item
+            a.page-link(href="/api/mare/uses/#{parseFloat(current)+50}") #{parseFloat(current)+50}
+        - if(current == pages)
+          li.page-item.disabled
+        - else
+          li.page-item
+            a.page-link(href="/api/mare/uses/#{parseFloat(current)+1}") Next
+        -if(parseFloat(current) != pages)
+          li.page-item
+            a.page-link(href="/api/mare/uses/#{pages}") Last
+    
+          

@@ -1,0 +1,41 @@
+link(href='/stylesheets/style.css', rel='stylesheet')
+link(href='/stylesheets/bootstrap.css', rel='stylesheet')
+script(src='/javascripts/jquery-3.1.0.min.js')
+script(src='/javascripts/bootstrap.min.js')
+script(src='/javascripts/updateversion.js')
+head
+  title MARE Update Version
+body
+  div.container
+    div.row
+      div.col-lg8.col-lg-offset-2
+        h1 Update MARE Version
+        p.lead When updating ImgurDL to a new version, change the version number here to notify users.
+        each record, i in docs 
+            form#contact-form(method="post" action="setversion" role="form")
+              div.messages
+              div.controls
+                div
+                  br
+                  br
+                  br
+                  br
+                  div.row
+                    div.col-md-6
+                      div.form-group
+                        label(for="form_appName") App Name
+                        input.form-control#form_appName(type="text" name="appName" value="#{record.appName}" )
+                    
+
+                        label(for="form_currentVersion") Current Version
+                         input.form-control#form_currentVersion(type="text" name="currentVersion" value="#{record.appVersion}")
+                        div.helpblock.with-errors
+              
+                    div.col-md-6
+                      div.form-group
+                        label(for="form_link") New Version
+                        input.form-control#form_link(type="text" name="newVersion" )
+                        div.helpblock.with-errors
+                    div.col-md-12
+                      input.btn.btn-success.btn-send(type="submit" value="Update")
+            
