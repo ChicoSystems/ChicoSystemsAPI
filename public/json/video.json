@@ -1,0 +1,8 @@
+{
+"titles":["Burger Spot - Famous Combo", "Test2", "Test3", "Test4", "Test5"],
+"descriptions":["desc1", "desc2", "desc3", "desc4", "desc5"],
+"subdescription":["subdesc1", "subdesc2", "subdesc3", "subdesc4", "subdesc5"],
+"videoURLs":[ "https://chicosystems.com/VIDEO/DsaSignageSpotBurgerDMB.mp4", "https://chicosystems.com/VIDEO/DsaSignageSpotBurgerDMB.mp4", "https://chicosystems.com/VIDEO/DsaSignageSpotBurgerDMB.mp4", "https://chicosystems.com/VIDEO/DsaSignageSpotBurgerDMB.mp4", "https://chicosystems.com/VIDEO/DsaSignageSpotBurgerDMB.mp4"],
+"cardImageURLs":["https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Demo%20Slam/Google%20Demo%20Slam_%2020ft%20Search/card.jpg"."https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Demo%20Slam/Google%20Demo%20Slam_%2020ft%20Search/card.jpg","https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Demo%20Slam/Google%20Demo%20Slam_%2020ft%20Search/card.jpg","https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Demo%20Slam/Google%20Demo%20Slam_%2020ft%20Search/card.jpg","https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Demo%20Slam/Google%20Demo%20Slam_%2020ft%20Search/card.jpg"]
+
+}
